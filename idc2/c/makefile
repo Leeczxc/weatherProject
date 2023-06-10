@@ -2,16 +2,21 @@
 PUBINCL = -I../../public
 
 # 开发框架cpp文件名，这里直接包含进来，没有采用链接库
-PUBCPP = -I../../public/_public.cpp
+PUBCPP = ../../public/_public.cpp
 
 # 编译参数
 CFLAGS = -g -o
 
-all: crtsurfdata1
+all: crtsurfdata1 crtsurfdata2
 
 crtsurfdata1: crtsurfdata1.cpp
 	g++ $(CFLAGS) crtsurfdata1 crtsurfdata1.cpp $(PUBINCL) $(PUBCPP) -lm -lc
 	cp crtsurfdata1 ../bin/.
 
+crtsurfdata2: crtsurfdata2.cpp
+	g++ $(CFLAGS) crtsurfdata2 crtsurfdata2.cpp $(PUBINCL) $(PUBCPP) -lm -lc
+	cp crtsurfdata2 ../bin/.
+
 clean:
 	rm crtsurfdata1
+	rm crtsurfdata2
