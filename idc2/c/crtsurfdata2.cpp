@@ -63,7 +63,6 @@ bool loadSTCode(const char *infile){
         // 从站点参数文件中读取一行，如果已经读取完，跳出循环。
         if(File.Fgets(strBuffer, 300, true)==false)
             break;
-        logfile.Write("=%s=\n", strBuffer);
 
         // 把读取到的每一行拆分
         CmdStr.SplitToCmd(strBuffer, ",", true);
@@ -87,4 +86,4 @@ bool loadSTCode(const char *infile){
         vstcode[ii].provname, vstcode[ii].obtid, vstcode[ii].obtname, vstcode[ii].lat, vstcode[ii].lon, vstcode[ii].height);
     }
     return true;
-}
+};
