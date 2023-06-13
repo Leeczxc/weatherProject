@@ -1,5 +1,5 @@
 /*
- *  crtsurfdatar4.cpp      用于生成全国气象站点观测的分钟数据
+ *  crtsurfdatar5.cpp      用于生成全国气象站点观测的分钟数据
  *  author:leeczxc
 */
 
@@ -182,6 +182,13 @@ bool CrtSurfFile(const char* outpath, const char* datafmt){
     if(strcmp(datafmt, "csv") == 0){
         File.Fprintf("站点代码，数据时间，气温，气压，相对湿度，风向，风俗，降雨量，能见度\n");
     }
+    if(strcmp(datafmt, "xml") == 0){
+        File.Fprintf("<data>\n");
+    }
+    if(strcmp(datafmt, "json") == 0){
+        File.Fprintf("{\"data\":[\n");
+    }
+
     // 遍历存放观测数据的vsurfdata容器
     for(int ii = 0; ii < vsurfdata.size(); ii++){
         //写入记录
@@ -190,8 +197,27 @@ bool CrtSurfFile(const char* outpath, const char* datafmt){
             vsurfdata[ii].obtid, vsurfdata[ii].obtid,vsurfdata[ii].ddatetime,vsurfdata[ii].t/10.0,vsurfdata[ii].p/10.0,\
             vsurfdata[ii].u,vsurfdata[ii].wd,vsurfdata[ii].wf/10.0,vsurfdata[ii].r/10.0,vsurfdata[ii].vis/10.0);
         }
+        if (strcmp(datafmt,"xml")==0){
+            File.Fprintf("<obtid>%s</obtid><ddatetime>%s</ddatetime><t>%.1f</t><p>%.1f</p>"\
+                        "<u>%d</u><wd>%d</wd><wf>%.1f</wf><r>%.1f</r><vis>%.1f</vis><endl/>\n",\
+            vsurfdata[ii].obtid,vsurfdata[ii].ddatetime,vsurfdata[ii].t/10.0,vsurfdata[ii].p/10.0,\
+            vsurfdata[ii].u,vsurfdata[ii].wd,vsurfdata[ii].wf/10.0,vsurfdata[ii].r/10.0,vsurfdata[ii].vis/10.0);
+        }
+        if (strcmp(datafmt,"json")==0){
+            File.Fprintf("{\"obtid\":\"%s\",\"ddatetime\":\"%s\",\"t\":\"%.1f\",\"p\":\"%.1f\","\
+                   "\"u\":\"%d\",\"wd\":\"%d\",\"wf\":\"%.1f\",\"r\":\"%.1f\",\"vis\":\"%.1f\"}",\
+            vsurfdata[ii].obtid,vsurfdata[ii].ddatetime,vsurfdata[ii].t/10.0,vsurfdata[ii].p/10.0,\
+            vsurfdata[ii].u,vsurfdata[ii].wd,vsurfdata[ii].wf/10.0,vsurfdata[ii].r/10.0,vsurfdata[ii].vis/10.0);
+            if (ii<vsurfdata.size()-1) File.Fprintf(",\n");
+            else   File.Fprintf("\n");
+        }
     }
-
+    if (strcmp(datafmt,"xml") == 0){
+        File.Fprintf("</data>\n");
+    }
+    if(strcmp(datafmt, "json") == 0){
+        File.Fprintf("]}\n");
+    }
     // 关闭文件
     File.CloseAndRename();
     logfile.Write("生成数据文件%s成功， 数据时间%s, 记录数%d.\n", strFileName, strddatetime, vsurfdata.size());
