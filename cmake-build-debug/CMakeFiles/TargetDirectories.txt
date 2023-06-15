@@ -1,3 +1,0 @@
-/home/Leeczxc/Projcet/weatherProject/cmake-build-debug/CMakeFiles/weatherProject.dir
-/home/Leeczxc/Projcet/weatherProject/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/Leeczxc/Projcet/weatherProject/cmake-build-debug/CMakeFiles/rebuild_cache.dir
