@@ -1,8 +1,9 @@
-PUBINCL = -I../public
+PUBINCL = -I../../public
 
 # 开发框架cpp文件名，这里直接包含进来，没有采用链接库
-PUBCPP = ../public/_public.cpp
+PUBCPP = ../../public/_public.cpp
 
+CFLAGS = -g -o
 all: procctl book
 
 procctl: procctl.cpp
@@ -10,8 +11,8 @@ procctl: procctl.cpp
 	cp ./procctl ../bin
 
 book: book.cpp
-	g++ -o book book.cpp
-	cp ./book ../bin
+	g++ $(CFLAGS) book book.cpp $(PUBINCL) $(PUBCPP) -lm -lc
+	cp book ../bin/.
 clean:
 	rm procctl
 	rm book
