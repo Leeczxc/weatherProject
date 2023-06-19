@@ -7,7 +7,11 @@ PUBCPP = ../../public/_public.cpp
 # 编译参数
 CFLAGS = -g -o
 
-all: crtsurfdata1 crtsurfdata2 crtsurfdata3 crtsurfdata4 crtsurfdata5
+all: crtsurfdata crtsurfdata1 crtsurfdata2 crtsurfdata3 crtsurfdata4 crtsurfdata5
+
+crtsurfdata: crtsurfdata.cpp
+	g++ $(CFLAGS) crtsurfdata crtsurfdata.cpp $(PUBINCL) $(PUBCPP) -lm -lc
+	cp crtsurfdata ../bin/.
 
 crtsurfdata1: crtsurfdata1.cpp
 	g++ $(CFLAGS) crtsurfdata1 crtsurfdata1.cpp $(PUBINCL) $(PUBCPP) -lm -lc
@@ -29,6 +33,7 @@ crtsurfdata5: crtsurfdata5.cpp
 	g++ $(CFLAGS) crtsurfdata5 crtsurfdata5.cpp $(PUBINCL) $(PUBCPP) -lm -lc
 	cp crtsurfdata5 ../bin/.
 clean:
+	rm crtsurfdata
 	rm crtsurfdata1
 	rm crtsurfdata2
 	rm crtsurfdata3
