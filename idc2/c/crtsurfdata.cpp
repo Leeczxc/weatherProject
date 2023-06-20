@@ -49,7 +49,10 @@ bool CrtSurfFile(const char* outpath, const char* datafmt);
 // 程序退出和信号2、15的处理函数
 void EXIT(int sig);
 
+// 打开站点参数文件
+CFile File;
 
+CPActive PActive;
 int main(int argc, char *argv[]){
     // infile outpath logfile
     printf("argc = %d\n", argc);
@@ -57,6 +60,8 @@ int main(int argc, char *argv[]){
         printf("Using:./crtsurfdata infile outpath logfile datafmt [datetime]\n");
         printf("Example:/project/idc1/bin/cursurfdata /project/idc1/bin/stcode.ini /tmp/surfdata \
         /log/idc/crtsurfdata.log xml, json, csv 2021071023000\n\n");
+        printf("Example:/project/idc1/bin/cursurfdata /project/idc1/bin/stcode.ini /tmp/surfdata \
+        /log/idc/crtsurfdata.log xml, json, csv\n\n");
 
         printf("infile 全国气象站点参数文件名。\n");
         printf("infile 全国气象站点数据文件存放的目录。\n");
@@ -80,6 +85,7 @@ int main(int argc, char *argv[]){
     }
 
     logfile.Write("crtsurfdata 开始运行。\n");
+    PActive.AddPInfo(20, "crtsurfdata");
     if(loadSTCode(argv[1]) == false){
         return -1;
     }
@@ -108,8 +114,7 @@ int main(int argc, char *argv[]){
 }
 
 bool loadSTCode(const char *infile){
-    // 打开站点参数文件
-    CFile File;
+
     std::cout << infile << std::endl;
     CCmdStr CmdStr;
 
@@ -236,6 +241,7 @@ bool CrtSurfFile(const char* outpath, const char* datafmt){
     if(strcmp(datafmt, "json") == 0){
         File.Fprintf("]}\n");
     }
+
     // 关闭文件
     File.CloseAndRename();
     // 修改文件的时间属性
