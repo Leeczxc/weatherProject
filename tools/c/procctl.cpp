@@ -5,12 +5,14 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-int main(int argc, char* argv[]){
+int main(int argc, char *argv[])
+{
     // excel使用参数中指定程序替换了当前进程的正文段、数据段、堆和栈
     // 先执行fork函数，创建一个子进程，让紫禁城调用execl执行新的程序
     // 在父进程中，可以调用wait函数等待新程序运行的结束，这样就可以实现调度的功能
 
-    if(argc < 3){
+    if (argc < 3)
+    {
         printf("Using:./procctl timetvl program argv ...\n");
         printf("Example:/tools1/bin/procctl 5 /usr/bin/tar zcvf /tmp/tmp.tgz /usr/include\n\n");
 
@@ -23,13 +25,14 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    for(int ii = 1; ii < 64; ii++){
+    for (int ii = 1; ii < 64; ii++)
+    {
         signal(ii, SIG_IGN);
         close(ii);
     }
 
     // 生成子进程， 父进程退出，让程序运行在后台，由系统1号进程托管
-    if(fork() != 0)
+    if (fork() != 0)
         exit(0);
 
     // 启用SIGCHLD信号， 让父进程可以wait子进程退出的状态
@@ -37,15 +40,20 @@ int main(int argc, char* argv[]){
 
     // execv函数
     char *pargv[argc];
-    for(int ii = 2; ii < argc; ii++){
-        pargv[ii -2] = argv[ii];
+    for (int ii = 2; ii < argc; ii++)
+    {
+        pargv[ii - 2] = argv[ii];
     }
     pargv[argc - 2] = NULL;
-    while(true){
-        if(fork() == 0){
+    while (true)
+    {
+        if (fork() == 0)
+        {
             execv(argv[2], pargv);
             exit(0);
-        }else{
+        }
+        else
+        {
             int status;
             wait(&status);
             sleep(atoi(argv[1]));

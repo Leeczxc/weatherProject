@@ -4,7 +4,10 @@ PUBINCL = -I../../public
 PUBCPP = ../../public/_public.cpp
 
 CFLAGS = -g -o
-all: deletefiles gzipfiles procctl checkproc book
+
+IMPORT =  ~/Project/weatherProject/public/_ftp.cpp  ~/Project/weatherProject/public/_public.cpp
+
+all: deletefiles gzipfiles procctl checkproc book ftpgetfiles ftpputfiles
 
 procctl: procctl.cpp
 	g++ -o procctl procctl.cpp
@@ -25,9 +28,20 @@ gzipfiles: gzipfiles.cpp
 deletefiles: deletefiles.cpp
 	g++ $(CFLAGS) deletefiles deletefiles.cpp $(PUBINCL) $(PUBCPP) -lm -lc
 	cp deletefiles ../bin/.
+
+ftpgetfiles: ftpgetfiles.cpp
+	g++ $(CFLAGS) ftpgetfiles ftpgetfiles.cpp $(PUBINCL) $(PUBCPP) ~/Project/weatherProject/public/libftp.a ~/Project/weatherProject/public/_ftp.cpp  -lm -lc
+	cp ftpgetfiles ../bin/.
+
+ftpputfiles: ftpputfiles.cpp
+	g++ $(CFLAGS) ftpputfiles ftpputfiles.cpp $(PUBINCL) $(PUBCPP) ~/Project/weatherProject/public/libftp.a ~/Project/weatherProject/public/_ftp.cpp  -lm -lc
+	cp ftpputfiles ../bin/.
+
 clean:
 	rm deletefiles
 	rm gzipfiles
 	rm procctl
 	rm book
 	rm checkproc
+	rm ftpgetfiles
+	rm ftpputfiles
