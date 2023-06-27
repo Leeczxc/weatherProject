@@ -1,7 +1,7 @@
 #include "_public.h"
 #include "_ftp.h"
 // 文件的参数
-// /home/Leeczxc/Project/weatherProject/idcdata/test.log "<host>localhost:21</host><mode>1</mode><username>Leeczxc</username><password>alichao1</password><localpath>/home/Leeczxc/Project/weatherProject/test/client</localpath><remotepath>/home/Leeczxc/Project/weatherProject/test/server</remotepath><matchname>*</matchname><listfilename>/home/Leeczxc/Project/weatherProject/idcdata/fileinfo</listfilename><ptype>1</ptype><remotepathbak>/home/Leeczxc/Project/weatherProject/idcdata</remotepathbak><okfilename>/home/Leeczxc/Project/weatherProject/idcdata/okfilename</okfilename><checkmtime>true</checkmtime><timeout>80</timeout><pname>ftpgetfiles_surfdata</pname>"
+// /home/Leeczxc/Project/weatherProject/idcdata/test.log "<host>localhost:21</host><mode>1</mode><username>Leeczxc</username><password>alichao1</password><localpath>/home/Leeczxc/Project/weatherProject/test/client</localpath><remotepath>/home/Leeczxc/Project/weatherProject/test/server</remotepath><matchname>*</matchname><listfilename>/home/Leeczxc/Project/weatherProject/idcdata/fileinfo</listfilename><ptype>1</ptype><localpathbak>/home/Leeczxc/Project/weatherProject/idcdata</localpathbak><okfilename>/home/Leeczxc/Project/weatherProject/idcdata/okfilename</okfilename><timeout>80</timeout><pname>ftpgetfiles_surfdata</pname>"
 struct st_arg
 {
     char host[31];           // 远程服务的ip和端口
@@ -196,10 +196,10 @@ bool _xmltoarg(char *strxmlbuffer)
         return false;
     }
 
-    GetXMLBuffer(strxmlbuffer, "remotepathbak", starg.localpathbak, 100); // 列出存放要上传文件名的文件
+    GetXMLBuffer(strxmlbuffer, "localpathbak", starg.localpathbak, 100); // 列出存放要上传文件名的文件
     if ((starg.ptype == 3) && strlen(starg.localpathbak) == 0)
     {
-        logfile.Write("Remotepathbak is null.\n");
+        logfile.Write("Localpathbak is null.\n");
         return false;
     }
 
@@ -235,7 +235,7 @@ bool _ftpputfiles()
         logfile.Write("LoadLocalFile() failed.\n");
         return false;
     }
-    PActive.UptATime();
+    PActive.UptATime(); 
 
     // 处理容器
     if (starg.ptype == 1)
@@ -262,7 +262,7 @@ bool _ftpputfiles()
         SNPRINTF(strremotefilename, sizeof(strremotefilename), 300, "%s/%s", starg.remotepath, vfileinfo2[ii].filename);
         SNPRINTF(strlocalfilename, sizeof(strlocalfilename), 300, "%s/%s", starg.localpath, vfileinfo2[ii].filename);
         // 调用ftp.put()方法从传文件到服务器
-        logfile.Write("put %s ...", strremotefilename);
+        logfile.Write("put %s ...", strlocalfilename);
         if (ftp.put(strlocalfilename, strremotefilename, true) == false)
         {
             logfile.WriteEx("failed.\n");
@@ -306,6 +306,8 @@ bool LoadLocalFile()
     vfileinfo2.clear();
 
     CDir Dir;
+
+    Dir.SetDateFMT("yyyymmddhh24miss");
     // 如果目录下的总文件数超过1000，增量上传文件的功能会有问题
     if(Dir.OpenDir(starg.localpath, starg.matchname) == false){
         logfile.Write("Dir OpenDir(%s) 失败.\n", starg.localpath);
@@ -324,7 +326,7 @@ bool LoadLocalFile()
     }
     // for(int ii = 0; ii < vfileinfo2.size(); ii++){
     //     logfile.Write("filename=%s=\n", vfileinfo2[ii].filename);
-    // } 
+    // }
     return true;
 }
 
