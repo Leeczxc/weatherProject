@@ -8,7 +8,7 @@
 CTcpClient TcpClient;
 
 bool srv000(); // 心跳
-bool srvoo1(); // 登录
+bool srv001(); // 登录
 
 int main(int argc, char* argv[]){
     if(argc != 3){
@@ -71,6 +71,6 @@ bool srv001(){
         printf("登录失败.\n");
         return false;
     }
-    printf("登录成功.\n")
+    printf("登录成功.\n");
     return true;
 }

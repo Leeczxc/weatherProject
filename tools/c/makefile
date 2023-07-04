@@ -7,7 +7,7 @@ CFLAGS = -g -o
 
 IMPORT =  ~/Project/weatherProject/public/_ftp.cpp  ~/Project/weatherProject/public/_public.cpp
 
-all: deletefiles gzipfiles procctl checkproc book ftpgetfiles ftpputfiles
+all: deletefiles gzipfiles procctl checkproc book ftpgetfiles ftpputfiles tcpputfiles fileserver
 
 procctl: procctl.cpp
 	g++ -o procctl procctl.cpp
@@ -37,6 +37,15 @@ ftpputfiles: ftpputfiles.cpp
 	g++ $(CFLAGS) ftpputfiles ftpputfiles.cpp $(PUBINCL) $(PUBCPP) ~/Project/weatherProject/public/libftp.a ~/Project/weatherProject/public/_ftp.cpp  -lm -lc
 	cp ftpputfiles ../bin/.
 
+tcpputfiles: tcpputfiles.cpp
+	g++ $(CFLAGS) tcpputfiles tcpputfiles.cpp $(PUBINCL) $(PUBCPP) ~/Project/weatherProject/public/libftp.a ~/Project/weatherProject/public/_ftp.cpp  -lm -lc
+	cp tcpputfiles ../bin/.
+
+fileserver: fileserver.cpp
+	g++ $(CFLAGS) fileserver fileserver.cpp $(PUBINCL) $(PUBCPP) ~/Project/weatherProject/public/libftp.a ~/Project/weatherProject/public/_ftp.cpp  -lm -lc
+	cp fileserver ../bin/.
+
+
 clean:
 	rm deletefiles
 	rm gzipfiles
@@ -45,3 +54,5 @@ clean:
 	rm checkproc
 	rm ftpgetfiles
 	rm ftpputfiles
+	rm tcpputfiles
+	rm fileserver

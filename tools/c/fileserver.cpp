@@ -111,3 +111,58 @@ void FathEXIT(int sig)
     kill(0, 15); // 通知全部的子进程全部退出
     exit(0);
 }
+
+// 子进程退出服函数
+void ChldEXIT(int sig)
+{
+    // 以下代码是防止信号处理函数在执行的过程中被信号中断
+    signal(SIGINT, SIG_IGN);
+    signal(SIGTERM, SIG_IGN);
+
+    logfile.Write("子进程退出, sig=%d.\n", sig);
+    TcpServer.CloseClient(); // 关闭客户端的socke
+    exit(0);
+}
+
+// 处理业务的主函数
+bool _main(const char *strrecvbuffer, char *strsendbuffer)
+{
+    // 解析strrecvbuffer，获取服务代码（业务代码)
+    int isrvcode = -1;
+    GetXMLBuffer(strrecvbuffer, "srvcode", &isrvcode);
+
+    if (isrvcode != 1)
+    {
+        strcpy(strsendbuffer, "<retcode>-1</retcode><message>用户未登录。</message>");
+        return true;
+    }
+    switch (isrvcode)
+    {
+    case 1: // 登录
+        srv001(strrecvbuffer, strsendbuffer);
+        break;
+    default:
+        logfile.Write("业务代码不合适:%s\n", strrecvbuffer);
+        return false;
+    }
+}
+
+// 登录
+bool srv001(const char *strrecvbuffer, char *strsendbuffer)
+{
+    // <srvcode>1</srvcode><tel>1392220000</tel><password>123456</password>
+
+    // 解析strrecvbuffer,获取业务参数
+    char tel[21], password[21];
+    GetXMLBuffer(strrecvbuffer, "tel", tel, 20);
+    GetXMLBuffer(strrecvbuffer, "password", password, 20);
+    // 处理业务。 35   // 把处理结果生成strsendbuffer。
+    if ((strcmp(tel, "1392220000") == 0) && (strcmp(password, "123456") == 0))
+    {
+        strcpy(strsendbuffer, "<retcode>0</retcode><message>成功。</message>");
+    }
+    else
+        strcpy(strsendbuffer, "<retcode>-1</retcode><message>失败。</message>");
+
+    return true;
+}
