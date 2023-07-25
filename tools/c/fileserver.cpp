@@ -44,6 +44,8 @@ bool ClientLogin();
 // 调用文件上传的主函数
 void RecvFilesMain();
 
+bool RecvFile(const int sockfd, const char *filename, const char *mtime, int filesize);
+
 int main(int argc, char *argv[])
 {
     if (argc != 4)
@@ -299,7 +301,8 @@ void RecvFilesMain()
             }
         }
         // 处理上传文件的请求报文
-        if(strncmp(strrecvbuffer, "<filename>", 10) == 0){
+        if (strncmp(strrecvbuffer, "<filename>", 10) == 0)
+        {
             // 解析上传文件请求报文的xml
             char clientfilename[301];
             memset(clientfilename, 0, sizeof(clientfilename));
@@ -310,8 +313,25 @@ void RecvFilesMain()
             GetXMLBuffer(strrecvbuffer, "mtime", mtime, 20);
             GetXMLBuffer(strrecvbuffer, "size", &filesize);
 
+            // 客户端和服务端文件的目录是不一样的，以下代码生成服务端的文件名
+            // 把文件名的clientpath替换成srvpath，要小心第三个参数
+            char serverfilename[301];
+            memset(serverfilename, 0, sizeof(serverfilename));
+            strcpy(serverfilename, clientfilename);
+            UpdateStr(serverfilename, starg.clientpath, starg.srvpath, false);
+
             // 接受上传文件的内容
-            SNPRINTF(strsendbuffer, sizeof(strsendbuffer), 1000, "<filename>%s</filename><result>ok</result>", strsendbuffer);
+            logfile.Write("recv %s(%d) ...", serverfilename, filesize);
+            if (RecvFile(TcpServer.m_connfd, serverfilename, mtime, filesize) == true)
+            {
+                logfile.WriteEx("RecvFile(TcpServer.m_connfd, serverfilename. mtime, filesize) OK. \n");
+                SNPRINTF(strsendbuffer, sizeof(strsendbuffer), 1000, "<filename>%s</filename><result>ok</result>", clientfilename);
+            }
+            else
+            {
+                logfile.WriteEx("RecvFile(TcpServer.m_connfd, serverfilename. mtime, filesize) failed. \n");
+                SNPRINTF(strsendbuffer, sizeof(strsendbuffer), 1000, "<filename>%s</filename><result>failed</result>", clientfilename);
+            }
 
             // 把接受结果返回给对端
             logfile.Write("strsendbuffer=%s\n", strsendbuffer);
@@ -322,4 +342,9 @@ void RecvFilesMain()
             }
         }
     }
+}
+
+bool RecvFile(const int sockfd, const char *filename, const char *mtime, int filesize)
+{
+     
 }

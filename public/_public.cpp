@@ -1827,13 +1827,13 @@ bool CTcpServer::InitServer(const unsigned int port,const int backlog)
   if ( (m_listenfd = socket(AF_INET,SOCK_STREAM,0))<=0) return false;
 
   // 忽略SIGPIPE信号，防止程序异常退出。
-  signal(SIGPIPE,SIG_IGN);   
+  signal(SIGPIPE,SIG_IGN);
 
   // 打开SO_REUSEADDR选项，当服务端连接处于TIME_WAIT状态时可以再次启动服务器，
   // 否则bind()可能会不成功，报：Address already in use。
   //char opt = 1; unsigned int len = sizeof(opt);
   int opt = 1; unsigned int len = sizeof(opt);
-  setsockopt(m_listenfd,SOL_SOCKET,SO_REUSEADDR,&opt,len);    
+  setsockopt(m_listenfd,SOL_SOCKET,SO_REUSEADDR,&opt,len);
 
   memset(&m_servaddr,0,sizeof(m_servaddr));
   m_servaddr.sin_family = AF_INET;

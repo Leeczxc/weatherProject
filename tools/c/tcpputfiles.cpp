@@ -43,7 +43,8 @@ char strsendbuffer[1024]; // 接受保文的buffer
 
 bool ActiveTest(); // 心跳
 
- // 调用文件上传的主函数，执行一次文件上传的任务
+bool SendFile(const int sockfd, const char *filename, const int filesize);
+// 调用文件上传的主函数，执行一次文件上传的任务
 bool _tcpputfiles();
 
 int main(int argc, char *argv[])
@@ -86,14 +87,17 @@ int main(int argc, char *argv[])
         EXIT(-1);
     }
 
-    while(true){
+    while (true)
+    {
         // 调用文件上传的主函数，执行一次文件上传的任务
-        if(_tcpputfiles() ==false){
+        if (_tcpputfiles() == false)
+        {
             logfile.Write("_tcpputfiles() failed.\n");
             EXIT(-1);
         }
         sleep(starg.timetvl);
-        if(ActiveTest() == false){
+        if (ActiveTest() == false)
+        {
             break;
         }
     }
@@ -275,31 +279,51 @@ bool _xmltoarg(char *strxmlbuffer)
 
     return true;
 }
- 
+
 // 调用文件上传的主函数，执行一次文件上传的任务
-bool _tcpputfiles(){
+bool _tcpputfiles()
+{
     CDir Dir;
     // 调用OpenDir()大佬starg.clientpath目录
-    if(Dir.OpenDir(starg.clientpath, starg.matchname, 10000, starg.andchild) == false){
+    if (Dir.OpenDir(starg.clientpath, starg.matchname, 10000, starg.andchild) == false)
+    {
         logfile.Write("Dir.openDir(%s) 失败\n", starg.clientpath);
     }
-    while(true){
+    while (true)
+    {
+        // 初始化
+        memset(strsendbuffer, 0, sizeof(strsendbuffer));
+        memset(strrecvbuffer, 0, sizeof(strrecvbuffer));
         // 遍历目录中的每个文件，调用ReadDir()获取一个文件名
-        if(Dir.ReadDir() == false){
+        if (Dir.ReadDir() == false)
+        {
             break;
         }
 
         // 把文件名、修改时间、文件大小组成报文，发送给对端
         SNPRINTF(strsendbuffer, sizeof(strsendbuffer), 1000, "<filename>%s</filename><mtime>%s</mtime><size>%d</size>",
-        Dir.m_FullFileName, Dir.m_ModifyTime, Dir.m_FileSize);
+                 Dir.m_FullFileName, Dir.m_ModifyTime, Dir.m_FileSize);
         logfile.Write("strsendbuffer=%s\n", strsendbuffer);
-        if(TcpClient.Write(strsendbuffer) == false){
+        if (TcpClient.Write(strsendbuffer) == false)
+        {
             logfile.Write("TcpClient.Write() failed.\n");
             return false;
         }
         // 把文件的内容发送给对端
+        logfile.Write("send %s(%d) ...", Dir.m_FullFileName, Dir.m_FileSize);
+        if (SendFile(TcpClient.m_connfd, Dir.m_FullFileName, Dir.m_FileSize) == true)
+        {
+            logfile.Write("ok.\n");
+        }
+        else
+        {
+            logfile.Write("failed.\n");
+            TcpClient.Close();
+            return false;
+        }
         // 接收对端的确认报文
-        if(TcpClient.Read(strrecvbuffer, 20) ==false){
+        if (TcpClient.Read(strrecvbuffer, 20) == false)
+        {
             logfile.Write("TcpClient.Read() failed.\n");
             return false;
         }
@@ -307,4 +331,54 @@ bool _tcpputfiles(){
         // 删除或者转存本地的文件
     }
     return true;
-} 
+}
+
+bool SendFile(const int sockfd, const char *filename, const int filesize)
+{
+    int onread = 0;    // 每次调用fread时打算读取的字节数
+    int bytes = 0;     // 调用一次fread从文件中读取的文件数
+    char buffer[1000]; // 从文件读取数据的buffer
+    int totalbytes;    // 从文件中已读取的字节总数
+    FILE *fp = NULL;
+    // 以"rb"的模式打开文件
+    if ((fp = fopen(filename, "rb")) == NULL)
+    {
+        logfile.Write("Open(%s) failed.\n", filename);
+        return false;
+    }
+    while (true)
+    {
+        memset(buffer, 0, sizeof(buffer));
+        // 计算本次应该读取的字节数， 如果剩余的数据超过1000字节，就打算读1000字节
+        if (filesize - totalbytes > 1000)
+        {
+            onread = 1000;
+        }
+        else
+        {
+            onread = filesize - totalbytes;
+        }
+        // 从文件中读取数据
+        bytes = fread(buffer, 1, onread, fp);
+        // 把读取的数据发送给对端
+        if (bytes > 0)
+        {
+            if (Writen(sockfd, buffer, bytes) == false)
+            {
+                logfile.Write("Writen(sockfd, buffer, bytes) failed.\n");
+                fclose(fp);
+                return false;
+            }
+        }
+        // 计算文件未读取的字节数，如果文件已读完，跳出循环
+        totalbytes = totalbytes + bytes;
+
+        if (totalbytes == filesize)
+        {
+            logfile.Write("%s send done.\n", filename);
+            break;
+        }
+    }
+    fclose(fp);
+    return true;
+}
