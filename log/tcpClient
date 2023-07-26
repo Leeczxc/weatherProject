@@ -1,0 +1,8 @@
+2023-07-26 18:50:33 发送: <ip>localhost</ip><port>2222</port><ptype>2</ptype><clientpath>/home/Leeczxc/Project/weatherProject/test/client</clientpath><clientpathbak>/home/Leeczxc/Project/weatherProject/test/bak</clientpathbak><srvpathbak>/home/Leeczxc/Project/weatherProject/test/bak</srvpathbak><andchild>true</andchild><matchname>*</matchname><srvpath>/home/Leeczxc/Project/weatherProject/test/server</srvpath><timetvl>10</timetvl><timeout>50</timeout><pname>tcpputfiles_surfdata</pname><clienttype>2</clienttype>
+2023-07-26 18:50:33 接受: ok
+2023-07-26 18:50:33 登录(localhost:2222)成功.
+2023-07-26 18:50:33 recv /home/Leeczxc/Project/weatherProject/test/client/1(0) ...OK. 
+2023-07-26 18:50:33 recv /home/Leeczxc/Project/weatherProject/test/client/2(0) ...OK. 
+2023-07-26 18:50:33 recv /home/Leeczxc/Project/weatherProject/test/client/3(0) ...OK. 
+2023-07-26 18:50:33 recv /home/Leeczxc/Project/weatherProject/test/client/4(0) ...OK. 
+2023-07-26 18:50:33 recv /home/Leeczxc/Project/weatherProject/test/client/book.cpp(7019) ...OK. 

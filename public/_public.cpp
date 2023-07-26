@@ -1798,7 +1798,7 @@ bool CTcpClient::Write(const char *buffer,const int ibuflen)
 
 void CTcpClient::Close()
 {
-  if (m_connfd > 0) close(m_connfd); 
+  if (m_connfd > 0) close(m_connfd);
 
   m_connfd=-1;
   memset(m_ip,0,sizeof(m_ip));

@@ -44,8 +44,12 @@ char strsendbuffer[1024]; // 接受保文的buffer
 bool ActiveTest(); // 心跳
 
 bool SendFile(const int sockfd, const char *filename, const int filesize);
-// 调用文件上传的主函数，执行一次文件上传的任务
-bool _tcpputfiles();
+
+bool _tcpputfiles(); // 调用文件上传的主函数，执行一次文件上传的任务
+
+bool bcontinue = true; // 如果调用_tcpputfiles()发送了文件，bcontinue为true， 初始化为true
+
+bool AckMessage(const char *strrecvbuffer); // 文件上传后文件的处理方式
 
 int main(int argc, char *argv[])
 {
@@ -73,6 +77,7 @@ int main(int argc, char *argv[])
     {
         return -1;
     }
+    PActive.AddPInfo(starg.timeout, starg.pname); // 把进程的心跳信息写入共享内存
     // 向服务端发送连接请求
     if (TcpClient.ConnectToServer(starg.ip, starg.port) == false)
     {
@@ -95,11 +100,16 @@ int main(int argc, char *argv[])
             logfile.Write("_tcpputfiles() failed.\n");
             EXIT(-1);
         }
-        sleep(starg.timetvl);
-        if (ActiveTest() == false)
+        if (bcontinue == false)
         {
-            break;
+            sleep(starg.timetvl);
+            if (ActiveTest() == false)
+            {
+                break;
+            }
         }
+
+        PActive.UptATime();
     }
 
     // for (int ii = 3; ii < 5; ii++)
@@ -121,7 +131,7 @@ bool ActiveTest()
     memset(strsendbuffer, 0, sizeof(strsendbuffer));
     memset(strrecvbuffer, 0, sizeof(strrecvbuffer));
     SPRINTF(strsendbuffer, sizeof(strsendbuffer), "<activetest>ok</activetest>");
-    logfile.Write("发送: %s\n", strsendbuffer);
+    // logfile.Write("发送: %s\n", strsendbuffer);
     if (TcpClient.Write(strsendbuffer) == false)
     { // 向服务端发送请求报文
         logfile.Write("心跳 tcpClient.Write(buffer) failed\n");
@@ -133,7 +143,7 @@ bool ActiveTest()
         logfile.Write("心跳 tcpClient.Read(strrecvbuffer, 20) failed\n");
         return false;
     }
-    logfile.Write("接受: %s\n", strrecvbuffer);
+    // logfile.Write("接受: %s\n", strrecvbuffer);
     return true;
 }
 
@@ -289,6 +299,10 @@ bool _tcpputfiles()
     {
         logfile.Write("Dir.openDir(%s) 失败\n", starg.clientpath);
     }
+
+    int delayed = 0; // 未收到对端确认报文的文件数量
+    int buflen = 0;  // 用于存放strrecvbuffer的长度
+    bcontinue = false;
     while (true)
     {
         // 初始化
@@ -299,46 +313,73 @@ bool _tcpputfiles()
         {
             break;
         }
+        bcontinue = true;
 
         // 把文件名、修改时间、文件大小组成报文，发送给对端
         SNPRINTF(strsendbuffer, sizeof(strsendbuffer), 1000, "<filename>%s</filename><mtime>%s</mtime><size>%d</size>",
                  Dir.m_FullFileName, Dir.m_ModifyTime, Dir.m_FileSize);
-        logfile.Write("strsendbuffer=%s\n", strsendbuffer);
+        // logfile.Write("strsendbuffer=%s\n", strsendbuffer);
         if (TcpClient.Write(strsendbuffer) == false)
         {
             logfile.Write("TcpClient.Write() failed.\n");
             return false;
         }
         // 把文件的内容发送给对端
-        logfile.Write("send %s(%d) ...", Dir.m_FullFileName, Dir.m_FileSize);
+        logfile.Write("send %s(%d) ... ", Dir.m_FullFileName, Dir.m_FileSize);
         if (SendFile(TcpClient.m_connfd, Dir.m_FullFileName, Dir.m_FileSize) == true)
         {
-            logfile.Write("ok.\n");
+            logfile.WriteEx("ok. \n");
+            delayed++;
         }
         else
         {
-            logfile.Write("failed.\n");
+            logfile.Write("failed. \n");
             TcpClient.Close();
             return false;
         }
+        PActive.UptATime();
+
         // 接收对端的确认报文
-        if (TcpClient.Read(strrecvbuffer, 20) == false)
+        // if (TcpClient.Read(strrecvbuffer, 20) == false)
+        // {
+        //     logfile.Write("TcpClient.Read() failed.\n");
+        //     return false;
+        // }
+
+        while (delayed > 0)
         {
-            logfile.Write("TcpClient.Read() failed.\n");
-            return false;
+            memset(strrecvbuffer, 0, sizeof(strrecvbuffer));
+            if (TcpRead(TcpClient.m_connfd, strrecvbuffer, &buflen, -1) == false)
+            {
+                break;
+            }
+            delayed--;
+            // logfile.Write("strrecvbuffer=%s\n", strrecvbuffer);
+            // 删除或者转存本地的文件
+            AckMessage(strrecvbuffer);
         }
-        logfile.Write("strrecvbuffer=%s\n", strrecvbuffer);
-        // 删除或者转存本地的文件
     }
+
+    while (delayed > 0)
+    {
+        memset(strrecvbuffer, 0, sizeof(strrecvbuffer));
+        if (TcpRead(TcpClient.m_connfd, strrecvbuffer, &buflen, 10) == false)
+        {
+            break;
+        }
+        delayed--;
+        AckMessage(strrecvbuffer);
+    }
+
     return true;
 }
 
 bool SendFile(const int sockfd, const char *filename, const int filesize)
 {
-    int onread = 0;    // 每次调用fread时打算读取的字节数
-    int bytes = 0;     // 调用一次fread从文件中读取的文件数
-    char buffer[1000]; // 从文件读取数据的buffer
-    int totalbytes;    // 从文件中已读取的字节总数
+    int onread = 0;     // 每次调用fread时打算读取的字节数
+    int bytes = 0;      // 调用一次fread从文件中读取的文件数
+    char buffer[1000];  // 从文件读取数据的buffer
+    int totalbytes = 0; // 从文件中已读取的字节总数
     FILE *fp = NULL;
     // 以"rb"的模式打开文件
     if ((fp = fopen(filename, "rb")) == NULL)
@@ -375,10 +416,52 @@ bool SendFile(const int sockfd, const char *filename, const int filesize)
 
         if (totalbytes == filesize)
         {
-            logfile.Write("%s send done.\n", filename);
+            // logfile.Write("%s send done.\n", filename);
             break;
         }
     }
     fclose(fp);
+    return true;
+}
+
+bool AckMessage(const char *strrecvbuffer)
+{
+    char filename[301];
+    char result[11];
+
+    memset(filename, 0, sizeof(filename));
+    memset(result, 0, sizeof(result));
+
+    GetXMLBuffer(strrecvbuffer, "filename", filename, 300);
+    GetXMLBuffer(strrecvbuffer, "result", result, 10);
+
+    // 如果服务端接收文件失败
+    if (strcmp(result, "ok") != 0)
+    {
+        return false;
+    }
+    // ptype == 1, 删除文件
+    if (starg.ptype == 1)
+    {
+        if (REMOVE(filename) == false)
+        {
+            logfile.Write("rm %s false.\n", filename);
+            return false;
+        }
+    }
+
+    // ptype == 2, 移动到备份目录
+    if (starg.ptype == 2)
+    {
+        // 生成备份目录的文件名
+        char bakfilename[301];
+        STRCPY(bakfilename, sizeof(bakfilename), filename);
+        UpdateStr(bakfilename, starg.clientpath, starg.clientpathbak, false);
+        if (RENAME(filename, bakfilename) == false)
+        {
+            logfile.Write("REMOVE(%s, %s) failed.\n", filename, bakfilename);
+            return false;
+        }
+    }
     return true;
 }

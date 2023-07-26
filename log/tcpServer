@@ -1,0 +1,10 @@
+2023-07-26 18:50:33 客户端(127.0.0.1)已连接.
+2023-07-26 18:50:33 strrecvbuffer = <ip>localhost</ip><port>2222</port><ptype>2</ptype><clientpath>/home/Leeczxc/Project/weatherProject/test/client</clientpath><clientpathbak>/home/Leeczxc/Project/weatherProject/test/bak</clientpathbak><srvpathbak>/home/Leeczxc/Project/weatherProject/test/bak</srvpathbak><andchild>true</andchild><matchname>*</matchname><srvpath>/home/Leeczxc/Project/weatherProject/test/server</srvpath><timetvl>10</timetvl><timeout>50</timeout><pname>tcpputfiles_surfdata</pname><clienttype>2</clienttype>
+2023-07-26 18:50:33 127.0.0.1 login <ip>localhost</ip><port>2222</port><ptype>2</ptype><clientpath>/home/Leeczxc/Project/weatherProject/test/client</clientpath><clientpathbak>/home/Leeczxc/Project/weatherProject/test/bak</clientpathbak><srvpathbak>/home/Leeczxc/Project/weatherProject/test/bak</srvpathbak><andchild>true</andchild><matchname>*</matchname><srvpath>/home/Leeczxc/Project/weatherProject/test/server</srvpath><timetvl>10</timetvl><timeout>50</timeout><pname>tcpputfiles_surfdata</pname><clienttype>2</clienttype>.
+2023-07-26 18:50:33 send /home/Leeczxc/Project/weatherProject/test/server/1(0) ... ok. 
+2023-07-26 18:50:33 send /home/Leeczxc/Project/weatherProject/test/server/2(0) ... ok. 
+2023-07-26 18:50:33 send /home/Leeczxc/Project/weatherProject/test/server/3(0) ... ok. 
+2023-07-26 18:50:33 send /home/Leeczxc/Project/weatherProject/test/server/4(0) ... ok. 
+2023-07-26 18:50:33 send /home/Leeczxc/Project/weatherProject/test/server/book.cpp(7019) ... ok. 
+2023-07-26 18:50:44 心跳 TcpServer.Read(strrecvbuffer, 20) failed
+2023-07-26 18:50:44 子进程退出, sig=0.
