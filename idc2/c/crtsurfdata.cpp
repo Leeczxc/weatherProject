@@ -2,7 +2,7 @@
  *  crtsurfdatar.cpp      用于生成全国气象站点观测的分钟数据
  *  author:leeczxc
 */
-
+//  ./crtsurfdata /home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini /home/Leeczxc/Project/weatherProject/idcdata /home/Leeczxc/Project/weatherProject/log/surfdata.log  xml,json,csv 
 #include "_public.h"
 
 CLogFile logfile;

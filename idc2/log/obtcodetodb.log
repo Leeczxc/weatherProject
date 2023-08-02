@@ -1,0 +1,34 @@
+2023-08-02 20:23:46 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:23:46 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:23:46 stmtupt.execute() failed.
+updateT_ZHOBTCODE set cityname=?,provname=?,lat=?,lon=?,height=?,upttime=now() where id=?
+1064,You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'updateT_ZHOBTCODE set cityname=?,provname=?,lat=?,lon=?,height=?,upttime=now() w' at line 1
+2023-08-02 20:26:05 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:26:05 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:26:05 stmtupt.execute() failed.
+update T_ZHOBTCODE set cityname=?,provname=?,lat=?,lon=?,height=?,upttime=now() where id=?
+1054,Unknown column 'id' in 'where clause'
+2023-08-02 20:28:40 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:28:40 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:28:40 总记录数=839, 插入=805, 更新=34, 耗时=0.04秒。
+2023-08-02 20:31:37 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:31:37 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:31:37 总记录数=839, 插入=0, 更新=839, 耗时=0.04秒。
+2023-08-02 20:34:30 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:34:30 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:34:30 总记录数=839, 插入=0, 更新=839, 耗时=0.04秒。
+2023-08-02 20:36:48 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:36:49 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:36:49 总记录数=839, 插入=0, 更新=839, 耗时=0.03秒。
+2023-08-02 20:37:55 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:37:55 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:37:55 总记录数=839, 插入=839, 更新=0, 耗时=0.03秒。
+2023-08-02 20:42:02 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:42:02 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:42:02 总记录数=839, 插入=839, 更新=0, 耗时=0.03秒。
+2023-08-02 20:49:50 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:49:50 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:49:50 总记录数=839, 插入=0, 更新=839, 耗时=0.05秒。
+2023-08-02 20:52:16 加载参数文件(/home/Leeczxc/Project/weatherProject/idc2/ini/stcode.ini)成功，站点数(839).
+2023-08-02 20:52:17 connect databse(127.0.0.1,root,alichao1,test,3306) ok.
+2023-08-02 20:52:17 总记录数=839, 插入=0, 更新=839, 耗时=0.05秒。
